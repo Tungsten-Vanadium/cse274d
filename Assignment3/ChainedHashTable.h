@@ -10,25 +10,29 @@
 #include <climits>
 #include "utils.h"
 #include "array.h"
-#include "ArrayStack.h"
+#include "DLList.h"
 
 namespace ods {
 
 template<class T>
 class ChainedHashTable {
 protected:
-	typedef ArrayStack<T> List;
+	typedef DLList<T> List;
 	T null;
 	array<List> t;
 	int n;
 	int d;
 	int z;
+	int loadFactor;
 	static const int w = 32; //sizeof(int)*8;
 	void allocTable(int m);
 	void resize();
 	int hash(T x) {
 		return ((unsigned)(z * hashCode(x))) >> (w-d);
 	}
+
+	// Implemented methods
+	void SetLocalFactor(float f);
 
 public:
 	ChainedHashTable();
@@ -90,7 +94,7 @@ ChainedHashTable<T>::~ChainedHashTable() {
 template<class T>
 bool ChainedHashTable<T>::add(T x) {
 	if (find(x) != null) return false;
-	if (n+1 > t.length) resize();
+	if (n+1 > t.length * loadFactor) resize();
 	t[hash(x)].add(x);
 	n++;
 	return true;
@@ -128,6 +132,11 @@ void ChainedHashTable<T>::clear() {
 	d = 1;
 	array<List> b(2);
 	t = b;
+}
+
+template<class T>
+void ChainedHashTable<T>::SetLocalFactor(float f) {
+	loadFactor = f;
 }
 
 } /* namespace ods */
