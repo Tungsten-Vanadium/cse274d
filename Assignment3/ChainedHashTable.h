@@ -28,11 +28,12 @@ protected:
 	void allocTable(int m);
 	void resize();
 	int hash(T x) {
-		return ((unsigned)(z * hashCode(x))) >> (w-d);
+		return ((unsigned)(z * x % (1<<5))) >> (w-d);
 	}
 
 	// Implemented methods
 	void SetLocalFactor(float f);
+	int GetLongestList();
 
 public:
 	ChainedHashTable();
@@ -59,6 +60,7 @@ void ChainedHashTable<T>::resize() {
 		for (int j = 0; j < t[i].size(); j++) {
 			T x = t[i].get(j);
 			newTable[hash(x)].add(x);
+			n++;
 		}
 	}
 	t = newTable;
@@ -137,6 +139,17 @@ void ChainedHashTable<T>::clear() {
 template<class T>
 void ChainedHashTable<T>::SetLocalFactor(float f) {
 	loadFactor = f;
+}
+
+template<class T>
+int ChainedHashTable<T>::GetLongestList() {
+	int size = 0;
+	for(int i = 0; i < t.length; i++){
+		if(t[i].size() > size){
+			size = t[i].size();
+		}
+	}
+	return size;
 }
 
 } /* namespace ods */
