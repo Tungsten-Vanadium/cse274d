@@ -24,16 +24,18 @@ class LinearHashTable {
 	int n;   // number of values in T
 	int q;   // number of non-null entries in T
 	int d;   // t.length = 2^d
+	int z = rand() | 1;
 	T null, del;
 	void resize();
 	int hash(T x) {
-		unsigned h = hashCode(x);
+		unsigned h = (unsigned)(z * x % (1<<5))) >> (w-d);
 		return (tab[0][h&0xff]
 				 ^ tab[1][(h>>8)&0xff]
 				 ^ tab[2][(h>>16)&0xff]
 				 ^ tab[3][(h>>24)&0xff])
 				>> (w-d);
 	}
+
 	// Sample code for the book only -- never use this
 	/*
 	int idealHash(T x) {
@@ -106,9 +108,11 @@ void LinearHashTable<T>::resize() {
 	// insert everything into tnew
 	for (int k = 0; k < t.length; k++) {
 		if (t[k] != null && t[k] != del) {
-			int i = hash(t[k]);
-			while (tnew[i] != null)
-				i = (i == tnew.length-1) ? 0 : i + 1;
+			int i = hash(t[k]), j = 0;
+			while (tnew[i] != null){
+				i = (i == tnew.length-1) ? 0 : j * (i % (t.length - 1)) + 1;
+				j++;
+			}
 			tnew[i] = t[k];
 		}
 	}
@@ -128,9 +132,11 @@ template<class T>
 bool LinearHashTable<T>::add(T x) {
 	if (find(x) != null) return false;
 	if (2*(q+1) > t.length) resize();   // max 50% occupancy
-	int i = hash(x);
-	while (t[i] != null && t[i] != del)
-		i = (i == t.length-1) ? 0 : i + 1; // increment i
+	int i = hash(x), j = 0;
+	while (tnew[i] != null){
+		i = (i == tnew.length-1) ? 0 : j * (i % (t.length - 1)) + 1;
+		j++;
+	}
 	if (t[i] == null) q++;
 	n++;
 	t[i] = x;
@@ -139,17 +145,19 @@ bool LinearHashTable<T>::add(T x) {
 
 template<class T>
 T LinearHashTable<T>::find(T x) {
-	int i = hash(x);
-	while (t[i] != null) {
+	int i = hash(x), j = 0;
+	while (tnew[i] != null){
 		if (t[i] != del && t[i] == x) return t[i];
-		i = (i == t.length-1) ? 0 : i + 1; // increment i
+		i = (i == tnew.length-1) ? 0 : j * (i % (t.length - 1)) + 1;
+		j++;
 	}
 	return null;
 }
 
+
 template<class T>
 T LinearHashTable<T>::remove(T x) {
-	int i = hash(x);
+	int i = hash(x), j = 0;
 	while (t[i] != null) {
 		T y = t[i];
 		if (y != del && x == y) {
@@ -158,7 +166,8 @@ T LinearHashTable<T>::remove(T x) {
 			if (8*n < t.length) resize(); // min 12.5% occupancy
 			return y;
 		}
-		i = (i == t.length-1) ? 0 : i + 1;  // increment i
+		i = (i == tnew.length-1) ? 0 : j * (i % (t.length - 1)) + 1;
+		j++;
 	}
 	return null;
 }
@@ -166,10 +175,11 @@ T LinearHashTable<T>::remove(T x) {
 template<class T>
 bool LinearHashTable<T>::addSlow(T x) {
 	if (2*(q+1) > t.length) resize();   // max 50% occupancy
-	int i = hash(x);
+	int i = hash(x), j = 0;
 	while (t[i] != null) {
-			if (t[i] != del && x.equals(t[i])) return false;
-			i = (i == t.length-1) ? 0 : i + 1; // increment i
+		if (t[i] != del && x.equals(t[i])) return false;
+		i = (i == tnew.length-1) ? 0 : j * (i % (t.length - 1)) + 1;
+		j++;
 	}
 	t[i] = x;
 	n++; q++;
