@@ -45,6 +45,9 @@ public:
 	virtual void traverse();
 	virtual void traverse2();
 	virtual void bfTraverse();
+
+	// Implemented methods
+	int height2(Node* s);
 };
 
 class BTNode1 : public BTNode<BTNode1> { };
@@ -113,25 +116,25 @@ int BinaryTree<Node>::size(Node *u) {
 
 template<class Node>
 int BinaryTree<Node>::size2() {
-		Node *u = r, *prev = nil, *next;
-		int n = 0;
-		while (u != nil) {
-			if (prev == u->parent) {
-				n++;
-				if (u->left != nil) next = u->left;
-				else if (u->right != nil) next = u->right;
-				else next = u->parent;
-			} else if (prev == u->left) {
-				if (u->right != nil) next = u->right;
-				else next = u->parent;
-			} else {
-				next = u->parent;
-			}
-			prev = u;
-			u = next;
+	Node *u = r, *prev = nil, *next;
+	int n = 0;
+	while (u != nil) {
+		if (prev == u->parent) {
+			n++;
+			if (u->left != nil) next = u->left;
+			else if (u->right != nil) next = u->right;
+			else next = u->parent;
+		} else if (prev == u->left) {
+			if (u->right != nil) next = u->right;
+			else next = u->parent;
+		} else {
+			next = u->parent;
 		}
-		return n;
+		prev = u;
+		u = next;
 	}
+	return n;
+}
 
 
 template<class Node>
@@ -143,6 +146,41 @@ template<class Node>
 int BinaryTree<Node>::height(Node *u) {
 	if (u == nil) return -1;
 	return 1 + max(height(u->left), height(u->right));
+}
+
+// Implemented for Part 1
+template<class Node>
+int BinaryTree<Node>::height2(Node* s) {
+	Node *u = s, *prev = s->parent, *next;
+	int h = 0, temp = 0;
+	while (u != s->parent) {
+		if (prev == u->parent) {
+			if (u->left != nil) next = u->left;
+			else if (u->right != nil) next = u->right;
+			else next = u->parent;
+			if (next == u->parent){
+				temp--;
+			}else{
+				temp++;
+			}
+		} else if (prev == u->left) {
+			if (u->right != nil){
+				next = u->right;
+				temp++;
+			}else{
+				next = u->parent;
+				temp--;
+			}
+		} else {
+			next = u->parent;
+			temp--;
+		}
+		if(temp > h)
+			h = temp;
+		prev = u;
+		u = next;
+	}
+	return h;
 }
 
 template<class Node>
