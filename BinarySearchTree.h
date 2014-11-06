@@ -18,6 +18,11 @@ template<class Node, class T>
 class BSTNode : public BTNode<Node> {
 public:
 	T x;
+
+	// Implemented fields
+	int pre_number;
+	int in_number;
+	int post_number;
 };
 
 /**
@@ -31,6 +36,7 @@ protected:
 	using BinaryTree<Node>::nil;
 	int n;
 	T null;
+
 	virtual Node *findLast(T x);
 	virtual bool addChild(Node *p, Node *u);
 	virtual void splice(Node *u);
@@ -48,6 +54,15 @@ public:
 	virtual T findEQ(T x);
 	virtual int size();
 	virtual void clear();
+
+	// Implemented methods
+	void preOrderNumber();
+	int preOrderNumber(Node* u, int* c);
+	void inOrderNumber();
+	int inOrderNumber(Node* u, int* c);
+	void postOrderNumber();
+	int postOrderNumber(Node* u, int* c);
+	Node* getNode(T x);
 };
 
 template<class T>
@@ -283,6 +298,81 @@ template<class T>
 BinarySearchTree1<T>::BinarySearchTree1()  {
 }
 
+// Implemented for Part 3
+template<class Node, class T>
+void BinarySearchTree<Node, T>::preOrderNumber() {
+	int b = 0;
+	int* c = &b;
+	preOrderNumber(r, c);
+}
+
+template<class Node, class T>
+int BinarySearchTree<Node, T>::preOrderNumber(Node* u, int* c){
+	if(u == nil) return *c;
+	int b = *c;
+	u->pre_number = b;
+	b++;
+	//std::cout<<b<<"     ";
+	b = preOrderNumber(u->left, &b);
+	return preOrderNumber(u->right, &b);
+}
+
+template<class Node, class T>
+void BinarySearchTree<Node, T>::inOrderNumber() {
+	int b = 0;
+	int* c = &b;
+	inOrderNumber(r, c);
+}
+
+template<class Node, class T>
+int BinarySearchTree<Node, T>::inOrderNumber(Node* u, int* c){
+	if(u == nil) return *c;
+	int b = *c;
+	b = inOrderNumber(u->left, &b);
+	u->in_number = b;
+	b++;
+	return inOrderNumber(u->right, &b);
+}
+
+template<class Node, class T>
+void BinarySearchTree<Node, T>::postOrderNumber() {
+	//int size = this->size() - 1;
+	int b = 0;
+	int* c = &b;//&size;
+	postOrderNumber(r, c);
+}
+
+template<class Node, class T>
+int BinarySearchTree<Node, T>::postOrderNumber(Node* u, int* c){
+	if(u == nil) return *c;
+	int b = *c;
+	/*u->post_number = b;
+	b--;
+	b = postOrderNumber(u->right, &b);
+	return postOrderNumber(u->left, &b);*/
+	b = postOrderNumber(u->left, &b);
+	b = postOrderNumber(u->right, &b);
+	u->post_number = b;
+	b++;
+	return b;
+}
+
+template<class Node, class T>
+Node* BinarySearchTree<Node, T>::getNode(T x) {
+	Node *w = r, *z = nil;
+	while (w != nil) {
+		int comp = compare(x, w->x);
+		if (comp < 0) {
+			z = w;
+			w = w->left;
+		} else if (comp > 0) {
+			w = w->right;
+		} else {
+			return w;
+		}
+	}
+	return z == nil ? nil : z;
+}
 
 } /* namespace ods */
 #endif /* BINARYSEARCHTREE_H_ */
