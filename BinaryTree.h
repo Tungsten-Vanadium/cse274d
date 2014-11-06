@@ -48,6 +48,8 @@ public:
 
 	// Implemented methods
 	int height2(Node* s);
+	bool isBalanced();
+	int isBalanced(Node* u);
 };
 
 class BTNode1 : public BTNode<BTNode1> { };
@@ -222,6 +224,26 @@ void BinaryTree<Node>::bfTraverse() {
 		Node *u = q.remove(q.size()-1);
 		if (u->left != nil) q.add(q.size(),u->left);
 		if (u->right != nil) q.add(q.size(),u->right);
+	}
+}
+
+// Implemented for Part 2
+template<class Node>
+bool BinaryTree<Node>::isBalanced() {
+	return (isBalanced(r) != -1);
+}
+
+template<class Node>
+int BinaryTree<Node>::isBalanced(Node* u){
+	if(u == nil) return 1;
+	int left = isBalanced(u->left), right = isBalanced(u->right);
+	if(left == -1 || right == -1){
+		return -1;
+	}
+	if(abs(left - right) < 2){
+		return left + right + 1;
+	}else{
+		return -1;
 	}
 }
 
