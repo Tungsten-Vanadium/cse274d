@@ -11,6 +11,7 @@
 #include <cmath>
 #include "BinaryTree.h"
 #include "utils.h"
+#include "DLList.h"
 
 namespace ods {
 
@@ -63,6 +64,7 @@ public:
 	void postOrderNumber();
 	int postOrderNumber(Node* u, int* c);
 	Node* getNode(T x);
+	DLList<T> getLE(T x);
 };
 
 template<class T>
@@ -372,6 +374,71 @@ Node* BinarySearchTree<Node, T>::getNode(T x) {
 		}
 	}
 	return z == nil ? nil : z;
+}
+
+template<class Node, class T>
+DLList<T> BinarySearchTree<Node, T>::getLE(T x) {
+	Node *u = r, *prev = r->parent, *top;
+	if(r->x > x || r->right == nil || r->right->x > x){
+		top = r;
+	}else{
+		top = r->right;
+	}
+	DLList<T> list;
+	int on = 0;
+	while(u != nil){
+		on++;
+		if(prev == u->parent){
+			if(u->x > x){
+				if(u->left != nil){
+					u = u->left;
+					prev = u->parent;
+				}else{
+					break;
+				}
+			}else{
+				list.add(u->x);
+				if(u->left != nil){
+					u = u->left;
+					prev = u->parent;
+				}else if(u->right != nil){
+					if(u->right->x <= x){
+						u = u->right;
+						prev = u->parent;
+					}else{
+						break;
+					}
+				}else{
+					prev = u;
+					u = u->parent;
+					if(top == u) break;
+				}
+			}
+		}else if (prev == u->left){
+			if(u->right != nil){
+				if(u->right->x <= x){
+					u = u->right;
+					prev = u->parent;
+				}else{
+					break;
+				}
+			}else{
+				prev = u;
+				u = u->parent;
+				if(u->x > x)
+					break;
+			}
+		}else{
+			if(u->x > x){
+				break;
+			}else{
+				prev = u;
+				u = u->parent;
+			}
+		}
+	}
+	//std::cout << on << " " << this->height(r) << "   ";
+	return list;
 }
 
 } /* namespace ods */
