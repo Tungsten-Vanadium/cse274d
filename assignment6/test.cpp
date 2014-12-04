@@ -6,6 +6,7 @@
  */
 
 #include "BinaryHeap.h"
+#include <stdlib.h>
 
 using namespace std;
 using namespace ods;
@@ -13,19 +14,20 @@ using namespace ods;
 int main() {
 	srand(NULL);
 	BinaryHeap<int> bh;
-	for(int i = 0; i < 20; i++){
-		int ran = rand();
-		bh.add(ran % 100);
+	for(int i = 0; i < 3000; i++){
+		bh.add(rand());
 	}
-	bh.print();
-	for(int i = 0; i < 10; i++){
+	//bh.print();
+	cout << bh.checkHeap() << endl;
+	for(int i = 0; i < 3000; i++){
 		int ran = rand() % bh.size();
 		bh.remove(ran);
-		cout << ran << "     "<< endl;
-		bh.print();
-		cout << endl;
+		if(!bh.checkHeap()){
+			cout << "ERROR";
+			return 1;
+		}
 	}
-	bh.print();
+	cout << "Done";
 	return 0;
 }
 

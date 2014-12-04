@@ -49,6 +49,7 @@ public:
 	// Implemented method
 	T remove(int i);
 	void print();
+	bool checkHeap();
 };
 
 
@@ -162,6 +163,7 @@ template<class T>
 T BinaryHeap<T>::remove(int i){
 	T x = a[i];
 	a[i] = a[--n];
+	bubbleUp(i);
 	trickleDown(i);
 	if (3*n < a.length) resize();
 	return x;
@@ -172,6 +174,19 @@ void BinaryHeap<T>::print() {
 	for(int i = 0; i < n; i++)
 		std::cout << a[i] << " ";
 	std::cout << std::endl;
+}
+
+template<class T>
+bool BinaryHeap<T>::checkHeap() {
+	int i = 0;
+	while(right(i) < n){
+		if(a[i] > a[2 * i + 1] || a[i] > a[2 * i + 2]){
+			std::cout << a[i] << " " << a[2 * i + 1] << " " << a[2 * i + 2];
+			return false;
+		}
+		i++;
+	}
+	return true;
 }
 
 }
